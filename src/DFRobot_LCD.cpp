@@ -1,7 +1,6 @@
 /*!
  * @file DFRobot_LCD.cpp
  * @brief DFRobot's LCD
- * @n High Accuracy Ambient Light Sensor
  *
  * @copyright	[DFRobot](http://www.dfrobot.com), 2016
  * @copyright	GNU Lesser General Public License
