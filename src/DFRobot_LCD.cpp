@@ -37,13 +37,13 @@ DFRobot_LCD::DFRobot_LCD(uint8_t lcd_cols, uint8_t lcd_rows, uint8_t lcd_Addr,
 
 void DFRobot_LCD::init() {
     Wire.begin();
-    _showfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
+    _showfunction = FLAG_LCD_4_BIT_MODE | FLAG_LCD_1_LINE | FLAG_LCD_5x8_DOTS;
     begin(_cols, _rows);
 }
 
 void DFRobot_LCD::clear() {
     // clear display, set cursor position to zero
-    command(LCD_CLEARDISPLAY);
+    command(CMD_LCD_CLEAR_DISPLAY);
 
     // this command takes a long time!
     delayMicroseconds(2000);
@@ -51,74 +51,74 @@ void DFRobot_LCD::clear() {
 
 void DFRobot_LCD::home() {
     // set cursor position to zero
-    command(LCD_RETURNHOME);
+    command(CMD_LCD_RETURN_HOME);
 
     // this command takes a long time!
     delayMicroseconds(2000);
 }
 
 void DFRobot_LCD::noDisplay() {
-    _showcontrol &= ~LCD_DISPLAYON;
-    command(LCD_DISPLAYCONTROL | _showcontrol);
+    _showcontrol &= ~FLAG_LCD_DISPLAY_ON;
+    command(CMD_LCD_DISPLAY_CONTROL | _showcontrol);
 }
 
 void DFRobot_LCD::display() {
-    _showcontrol |= LCD_DISPLAYON;
-    command(LCD_DISPLAYCONTROL | _showcontrol);
+    _showcontrol |= FLAG_LCD_DISPLAY_ON;
+    command(CMD_LCD_DISPLAY_CONTROL | _showcontrol);
 }
 
 void DFRobot_LCD::stopBlink() {
-    _showcontrol &= ~LCD_BLINKON;
-    command(LCD_DISPLAYCONTROL | _showcontrol);
+    _showcontrol &= ~FLAG_LCD_BLINK_ON;
+    command(CMD_LCD_DISPLAY_CONTROL | _showcontrol);
 }
 
 void DFRobot_LCD::blink() {
-    _showcontrol |= LCD_BLINKON;
-    command(LCD_DISPLAYCONTROL | _showcontrol);
+    _showcontrol |= FLAG_LCD_BLINK_ON;
+    command(CMD_LCD_DISPLAY_CONTROL | _showcontrol);
 }
 
 void DFRobot_LCD::noCursor() {
-    _showcontrol &= ~LCD_CURSORON;
-    command(LCD_DISPLAYCONTROL | _showcontrol);
+    _showcontrol &= ~FLAG_LCD_CURSOR_ON;
+    command(CMD_LCD_DISPLAY_CONTROL | _showcontrol);
 }
 
 void DFRobot_LCD::cursor() {
-    _showcontrol |= LCD_CURSORON;
-    command(LCD_DISPLAYCONTROL | _showcontrol);
+    _showcontrol |= FLAG_LCD_CURSOR_ON;
+    command(CMD_LCD_DISPLAY_CONTROL | _showcontrol);
 }
 
 void DFRobot_LCD::scrollDisplayLeft(void) {
-    command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVELEFT);
+    command(CMD_LCD_CURSOR_SHIFT | FLAG_LCD_DISPLAY_MOVE | FLAG_LCD_MOVE_LEFT);
 }
 
 void DFRobot_LCD::scrollDisplayRight(void) {
-    command(LCD_CURSORSHIFT | LCD_DISPLAYMOVE | LCD_MOVERIGHT);
+    command(CMD_LCD_CURSOR_SHIFT | FLAG_LCD_DISPLAY_MOVE | FLAG_LCD_MOVE_RIGHT);
 }
 
 void DFRobot_LCD::leftToRight(void) {
-    _showmode |= LCD_ENTRYLEFT;
-    command(LCD_ENTRYMODESET | _showmode);
+    _showmode |= FLAG_LCD_ENTRY_LEFT;
+    command(CMD_LCD_ENTRY_MODE_SET | _showmode);
 }
 
 void DFRobot_LCD::rightToLeft(void) {
-    _showmode &= ~LCD_ENTRYLEFT;
-    command(LCD_ENTRYMODESET | _showmode);
+    _showmode &= ~FLAG_LCD_ENTRY_LEFT;
+    command(CMD_LCD_ENTRY_MODE_SET | _showmode);
 }
 
 void DFRobot_LCD::noAutoscroll(void) {
-    _showmode &= ~LCD_ENTRYSHIFTINCREMENT;
-    command(LCD_ENTRYMODESET | _showmode);
+    _showmode &= ~FLAG_LCD_ENTRY_SHIFT_INCREMENT;
+    command(CMD_LCD_ENTRY_MODE_SET | _showmode);
 }
 
 void DFRobot_LCD::autoscroll(void) {
-    _showmode |= LCD_ENTRYSHIFTINCREMENT;
-    command(LCD_ENTRYMODESET | _showmode);
+    _showmode |= FLAG_LCD_ENTRY_SHIFT_INCREMENT;
+    command(CMD_LCD_ENTRY_MODE_SET | _showmode);
 }
 
 void DFRobot_LCD::customSymbol(uint8_t location, uint8_t charmap[]) {
 
     location &= 0x7; // we only have 8 locations 0-7
-    command(LCD_SETCGRAMADDR | (location << 3));
+    command(CMD_LCD_SET_CGRAM_ADDR | (location << 3));
 
 
     uint8_t data[9];
@@ -219,14 +219,14 @@ void DFRobot_LCD::printstr(const char c[]) {
 /*******************************private*******************************/
 void DFRobot_LCD::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
     if (lines > 1) {
-        _showfunction |= LCD_2LINE;
+        _showfunction |= FLAG_LCD_2_LINE;
     }
     _numlines = lines;
     _currline = 0;
 
     ///< for some 1 line displays you can select a 10 pixel high font
     if ((dotsize != 0) && (lines == 1)) {
-        _showfunction |= LCD_5x10DOTS;
+        _showfunction |= FLAG_LCD_5x10_DOTS;
     }
 
     ///< SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
@@ -238,28 +238,28 @@ void DFRobot_LCD::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
     ///< page 45 figure 23
 
     ///< Send function set command sequence
-    command(LCD_FUNCTIONSET | _showfunction);
+    command(CMD_LCD_FUNCTION_SET | _showfunction);
     delay(5);  // wait more than 4.1ms
 
     ///< second try
-    command(LCD_FUNCTIONSET | _showfunction);
+    command(CMD_LCD_FUNCTION_SET | _showfunction);
     delay(5);
 
     ///< third go
-    command(LCD_FUNCTIONSET | _showfunction);
+    command(CMD_LCD_FUNCTION_SET | _showfunction);
 
 
     ///< turn the display on with no cursor or blinking default
-    _showcontrol = LCD_DISPLAYON | LCD_CURSOROFF | LCD_BLINKOFF;
+    _showcontrol = FLAG_LCD_DISPLAY_ON | FLAG_LCD_CURSOR_OFF | FLAG_LCD_BLINK_OFF;
     display();
 
     ///< clear it off
     clear();
 
     ///< Initialize to default text direction (for romance languages)
-    _showmode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
+    _showmode = FLAG_LCD_ENTRY_LEFT | FLAG_LCD_ENTRY_SHIFT_DECREMENT;
     ///< set the entry mode
-    command(LCD_ENTRYMODESET | _showmode);
+    command(CMD_LCD_ENTRY_MODE_SET | _showmode);
 
 
     ///< backlight init
